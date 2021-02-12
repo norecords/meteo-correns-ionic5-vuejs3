@@ -5,7 +5,7 @@
         <ion-content>
           <ion-list id="inbox-list">
             <ion-list-header>Menu</ion-list-header>
-            <ion-note>meteo.correns.org</ion-note>
+            <ion-note v-html="results.site"></ion-note>
   
             <ion-menu-toggle auto-hide="false" v-for="(p, i) in appPages" :key="i">
               <ion-item @click="selectedIndex = i" router-direction="root" :router-link="p.url" lines="none" detail="false" class="hydrated" :class="{ selected: selectedIndex === i }">
@@ -35,7 +35,8 @@
 import { IonApp, IonContent, IonIcon, IonItem, IonLabel, IonList, IonListHeader, IonMenu, IonMenuToggle, IonNote, IonRouterOutlet, IonSplitPane } from '@ionic/vue';
 import { defineComponent, ref } from 'vue';
 import { useRoute } from 'vue-router';
-import { archiveOutline, archiveSharp, bookmarkOutline, bookmarkSharp, heartOutline, heartSharp, mailOutline, mailSharp, paperPlaneOutline, paperPlaneSharp, trashOutline, trashSharp, warningOutline, warningSharp } from 'ionicons/icons';
+import axios from 'axios';
+import { archiveOutline, archiveSharp, bookmarkOutline, bookmarkSharp, heartOutline, heartSharp, mailOutline, mailSharp, paperPlaneOutline, paperPlaneSharp, pulseOutline, trashOutline, trashSharp, warningOutline, warningSharp } from 'ionicons/icons';
 
 export default defineComponent({
   name: 'App',
@@ -52,47 +53,41 @@ export default defineComponent({
     IonNote, 
     IonRouterOutlet, 
     IonSplitPane,
+    
+  },
+  data () {
+    return {
+      results: {}
+    }
   },
   setup() {
     const selectedIndex = ref(0);
     const appPages = [
       {
         title: 'Live',
-        url: '/folder/Live',
-        iosIcon: mailOutline,
-        mdIcon: mailSharp
+        url: '/Live',
+        iosIcon: pulseOutline,
+        mdIcon: pulseOutline
       },
       {
-        title: 'Outbox',
-        url: '/folder/Outbox',
+        title: 'Graphiques',
+        url: '/Charts',
         iosIcon: paperPlaneOutline,
         mdIcon: paperPlaneSharp
       },
       {
-        title: 'Favorites',
-        url: '/folder/Favorites',
+        title: 'Records',
+        url: '/Records',
         iosIcon: heartOutline,
         mdIcon: heartSharp
       },
       {
-        title: 'Archived',
-        url: '/folder/Archived',
+        title: 'À propos',
+        url: '/about',
         iosIcon: archiveOutline,
         mdIcon: archiveSharp
-      },
-      {
-        title: 'Trash',
-        url: '/folder/Trash',
-        iosIcon: trashOutline,
-        mdIcon: trashSharp
-      },
-      {
-        title: 'Spam',
-        url: '/folder/Spam',
-        iosIcon: warningOutline,
-        mdIcon: warningSharp
       }
-    ];    
+    ];
     const path = window.location.pathname.split('folder/')[1];
     if (path !== undefined) {
       selectedIndex.value = appPages.findIndex(page => page.title.toLowerCase() === path.toLowerCase());
@@ -119,6 +114,17 @@ export default defineComponent({
       warningSharp,
       isSelected: (url: string) => url === route.path ? 'selected' : ''
     }
+  },
+  beforeMount () {
+    axios.get('https://meteo.correns.org/api/v2/api.php', {
+      params: {
+        q: 'weewx_data'
+      }   
+    })
+    .then((response) => {
+      this.results = response.data
+      console.log(this.results);
+    })
   }
 });
 </script>

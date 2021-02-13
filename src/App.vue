@@ -133,8 +133,7 @@ export default defineComponent({
     toggleTheme () {
       console.log('toggled')
       this.theme = this.theme == 'darkMode' ? '' : 'darkMode'; //toggles theme value
-      // document.documentElement.setAttribute('data-theme', this.theme); // updates the data-theme attribute
-      this.theme === 'darkMode' ? myBody.classList.add('dark') : myBody.classList.remove('dark');
+      this.theme === 'darkMode' ? myBody.classList.add('dark') : myBody.classList.replace('dark', ':root');
       console.log(this.theme)
     }
   }

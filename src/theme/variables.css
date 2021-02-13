@@ -1,10 +1,10 @@
 /* Ionic Variables and Theming. For more info, please see:
 http://ionicframework.com/docs/theming/ */
-
+body {
+  transition: all 1s ease-in-out;}
 /** Ionic CSS Variables **/
 :root {
-
-  /* Variables for default theme (light-mode) */
+  opacity: 0.9;
   --background-color: white;
   --text-color: black;  
 
@@ -88,6 +88,7 @@ http://ionicframework.com/docs/theming/ */
    */
 
    body.dark {
+    opacity: 0.9;
     --ion-color-primary: #428cff;
     --ion-color-primary-rgb: 66,140,255;
     --ion-color-primary-contrast: #ffffff;

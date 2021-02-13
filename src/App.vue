@@ -14,16 +14,22 @@
               </ion-item>
             </ion-menu-toggle>
           </ion-list>
-  <!--
-          <ion-list id="labels-list">
-            <ion-list-header>Labels</ion-list-header>
-            <ion-item v-for="(label, index) in labels" lines="none" :key="index">
-              <ion-icon slot="start" :ios="bookmarkOutline" :md="bookmarkSharp"></ion-icon>
-              <ion-label>{{ label }}</ion-label>
+          <ion-list>
+            <ion-item>
+              <ion-icon slot="start" :icon="moonOutline"></ion-icon>
+              <ion-label
+                v-if="theme !== 'darkMode'"
+              >
+                Toggle Dark Theme
+              </ion-label>
+              <ion-label
+                v-else
+              >
+                Toggle Light Theme
+              </ion-label>
+              <ion-toggle @ionChange="toggleTheme"  slot="end"></ion-toggle>
             </ion-item>
-
           </ion-list>
-  -->
         </ion-content>
       </ion-menu>
       <ion-router-outlet id="main-content"></ion-router-outlet>
@@ -32,11 +38,12 @@
 </template>
 
 <script lang="ts">
-import { IonApp, IonContent, IonIcon, IonItem, IonLabel, IonList, IonListHeader, IonMenu, IonMenuToggle, IonNote, IonRouterOutlet, IonSplitPane } from '@ionic/vue';
+import { IonApp, IonContent, IonIcon, IonItem, IonLabel, IonList, IonListHeader, IonMenu, IonMenuToggle, IonNote, IonRouterOutlet, IonSplitPane, IonToggle } from '@ionic/vue';
 import { defineComponent, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import axios from 'axios';
-import { archiveOutline, archiveSharp, bookmarkOutline, bookmarkSharp, heartOutline, heartSharp, mailOutline, mailSharp, paperPlaneOutline, paperPlaneSharp, pulseOutline, trashOutline, trashSharp, warningOutline, warningSharp } from 'ionicons/icons';
+import { barChartOutline, barChartSharp , helpBuoyOutline, helpBuoySharp , moonOutline ,pulseOutline, pulseSharp, receiptOutline, receiptSharp } from 'ionicons/icons';
+const myBody = document.getElementsByTagName('body')[0];
 
 export default defineComponent({
   name: 'App',
@@ -53,11 +60,12 @@ export default defineComponent({
     IonNote, 
     IonRouterOutlet, 
     IonSplitPane,
-    
+    IonToggle
   },
   data () {
     return {
-      results: {}
+      results: {},
+      theme: ''
     }
   },
   setup() {
@@ -67,25 +75,25 @@ export default defineComponent({
         title: 'Live',
         url: '/Live',
         iosIcon: pulseOutline,
-        mdIcon: pulseOutline
+        mdIcon: pulseSharp
       },
       {
         title: 'Graphiques',
         url: '/Charts',
-        iosIcon: paperPlaneOutline,
-        mdIcon: paperPlaneSharp
+        iosIcon: barChartOutline,
+        mdIcon: barChartSharp
       },
       {
         title: 'Records',
         url: '/Records',
-        iosIcon: heartOutline,
-        mdIcon: heartSharp
+        iosIcon: receiptOutline,
+        mdIcon: receiptSharp
       },
       {
         title: 'À propos',
         url: '/about',
-        iosIcon: archiveOutline,
-        mdIcon: archiveSharp
+        iosIcon: helpBuoyOutline,
+        mdIcon: helpBuoySharp
       }
     ];
     const path = window.location.pathname.split('folder/')[1];
@@ -98,20 +106,15 @@ export default defineComponent({
     return { 
       selectedIndex,
       appPages, 
-      archiveOutline, 
-      archiveSharp, 
-      bookmarkOutline, 
-      bookmarkSharp, 
-      heartOutline, 
-      heartSharp, 
-      mailOutline, 
-      mailSharp, 
-      paperPlaneOutline, 
-      paperPlaneSharp, 
-      trashOutline, 
-      trashSharp, 
-      warningOutline, 
-      warningSharp,
+      barChartOutline,
+      barChartSharp,
+      helpBuoyOutline,
+      helpBuoySharp,
+      moonOutline,
+      pulseOutline,
+      pulseSharp,
+      receiptOutline,
+      receiptSharp,
       isSelected: (url: string) => url === route.path ? 'selected' : ''
     }
   },
@@ -125,6 +128,15 @@ export default defineComponent({
       this.results = response.data
       console.log(this.results);
     })
+  },
+  methods: {
+    toggleTheme () {
+      console.log('toggled')
+      this.theme = this.theme == 'darkMode' ? '' : 'darkMode'; //toggles theme value
+      // document.documentElement.setAttribute('data-theme', this.theme); // updates the data-theme attribute
+      this.theme === 'darkMode' ? myBody.classList.add('dark') : myBody.classList.remove('dark');
+      console.log(this.theme)
+    }
   }
 });
 </script>

@@ -5,7 +5,7 @@
         <ion-content>
           <ion-list id="inbox-list">
             <ion-list-header>Menu</ion-list-header>
-            <ion-note v-html="results.site"></ion-note>
+            <ion-note v-html="store.state.weewxdata.station_url"></ion-note>
   
             <ion-menu-toggle auto-hide="false" v-for="(p, i) in appPages" :key="i">
               <ion-item @click="selectedIndex = i" router-direction="root" :router-link="p.url" lines="none" detail="false" class="hydrated" :class="{ selected: selectedIndex === i }">
@@ -16,16 +16,9 @@
           </ion-list>
           <ion-list>
             <ion-item>
-              <ion-icon slot="start" :icon="moonOutline"></ion-icon>
-              <ion-label
-                v-if="theme !== 'darkMode'"
-              >
-                Toggle Dark Theme
-              </ion-label>
-              <ion-label
-                v-else
-              >
-                Toggle Light Theme
+              <ion-icon :icon="moonOutline" slot="start"></ion-icon>
+              <ion-label>
+                Toggle {{ theme.name }} Theme
               </ion-label>
               <ion-toggle @ionChange="toggleTheme"  slot="end"></ion-toggle>
             </ion-item>
@@ -42,6 +35,7 @@ import { IonApp, IonContent, IonIcon, IonItem, IonLabel, IonList, IonListHeader,
 import { defineComponent, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import axios from 'axios';
+import { useStore } from "vuex";
 import { barChartOutline, barChartSharp , helpBuoyOutline, helpBuoySharp , moonOutline ,pulseOutline, pulseSharp, receiptOutline, receiptSharp } from 'ionicons/icons';
 const myBody = document.getElementsByTagName('body')[0];
 
@@ -65,7 +59,10 @@ export default defineComponent({
   data () {
     return {
       results: {},
-      theme: ''
+      theme: {
+        name: 'Dark',
+        mode: ''
+      }
     }
   },
   setup() {
@@ -96,12 +93,14 @@ export default defineComponent({
         mdIcon: helpBuoySharp
       }
     ];
-    const path = window.location.pathname.split('folder/')[1];
+    const path = window.location.pathname.split('/')[1];
     if (path !== undefined) {
       selectedIndex.value = appPages.findIndex(page => page.title.toLowerCase() === path.toLowerCase());
     }
     
     const route = useRoute();
+    const store = useStore();
+
     
     return { 
       selectedIndex,
@@ -115,7 +114,8 @@ export default defineComponent({
       pulseSharp,
       receiptOutline,
       receiptSharp,
-      isSelected: (url: string) => url === route.path ? 'selected' : ''
+      isSelected: (url: string) => url === route.path ? 'selected' : '',
+      store
     }
   },
   beforeMount () {
@@ -125,16 +125,23 @@ export default defineComponent({
       }   
     })
     .then((response) => {
-      this.results = response.data
-      console.log(this.results);
+      this.store.commit('weewxData', response.data)
+      // this.results = this.store.state.weewxdata
+      console.log(this.store.state.weewxdata);
     })
   },
   methods: {
     toggleTheme () {
-      console.log('toggled')
-      this.theme = this.theme == 'darkMode' ? '' : 'darkMode'; //toggles theme value
-      this.theme === 'darkMode' ? myBody.classList.add('dark') : myBody.classList.replace('dark', ':root');
-      console.log(this.theme)
+      // console.log('toggled')
+      this.theme.mode = this.theme.mode == 'darkMode' ? '' : 'darkMode'; //toggles theme value
+      if (this.theme.mode === 'darkMode') {
+        myBody.classList.add('dark')
+        this.theme.name = 'Light'
+      } else {
+        myBody.classList.replace('dark', ':root')
+        this.theme.name = 'Dark'
+      }
+      // console.log(this.theme)
     }
   }
 });

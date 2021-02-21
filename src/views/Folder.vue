@@ -26,6 +26,7 @@ export default {
   ionViewWillEnter () {
     console.log("Query for api")
     this.getData()
+    this.getForecast()
     setInterval(() => { console.log('Reloading api...'); this.getData(); }, 300000); // 5 mins
   },
   methods: {
@@ -38,6 +39,17 @@ export default {
       .then((response) => {
         this.$store.commit('weewxData', response.data)
         console.log('Api is loaded and commited into Vuex')
+      })
+    },
+    getForecast () {
+      axios.get('https://meteo.correns.org/api/v2/api.php', {
+        params: {
+          q: 'forecast'
+        }   
+      })
+      .then((response) => {
+        this.$store.commit('forecastData', response.data)
+        console.log('Forecast is loaded and commited into Vuex')
       })
     }
   }

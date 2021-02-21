@@ -16,12 +16,15 @@
     <ion-content :fullscreen="true">
       <ion-grid>
         <ion-row>
-          <ion-col size-sm="12" size-lg="6">
+          <ion-col size-sm="12" size-md="6" size-lg="6">
             <ion-card>
               <ion-card-content>
                 <ion-row>
                   <ion-col size="6">
-                    forecast
+                    <img
+                      v-if="$store.state.forecast.current" 
+                      v-bind:src="aerisIcon($store.state.forecast.current[0].response.ob.icon)"
+                    />
                   </ion-col>
                   <ion-col size="6">
                     <span
@@ -29,8 +32,7 @@
                       :style="tempColorize($store.state.weewxdata.current.outTemp_formatted)"
                       class="weatherdataTemp"
                     >
-                      {{ $store.state.weewxdata.current.outTemp_formatted }}
-                      <sup class="outtempunitlabelsuper">°C</sup>
+                      {{ $store.state.weewxdata.current.outTemp_formatted }}<sup class="outtempunitlabelsuper">°C</sup>
                     </span>
                   </ion-col>
                 </ion-row>
@@ -63,6 +65,128 @@ export default {
     IonTitle
   },
   methods: {
+    aerisIcon: function (data) {
+      // https://www.aerisweather.com/support/docs/api/reference/icon-list/
+      const iconName = data.split(".")[0]; // Remove .png
+      
+      const iconDict = {
+          "blizzard": "snow",
+          "blizzardn": "snow",
+          "blowingsnow": "snow",
+          "blowingsnown": "snow",
+          "clear": "clear-day",
+          "clearn": "clear-night",
+          "cloudy": "cloudy",
+          "cloudyn": "cloudy",
+          "cloudyw": "cloudy",
+          "cloudywn": "cloudy",
+          "cold": "clear-day",
+          "coldn": "clear-night",
+          "drizzle": "rain",
+          "drizzlen": "rain",
+          "dust": "fog",
+          "dustn": "fog",
+          "fair": "mostly-clear-day",
+          "fairn": "mostly-clear-night",
+          "drizzlef": "rain",
+          "fdrizzlen": "rain",
+          "flurries": "sleet",
+          "flurriesn": "sleet",
+          "flurriesw": "sleet",
+          "flurrieswn": "sleet",
+          "fog": "fog",
+          "fogn": "fog",
+          "freezingrain": "rain",
+          "freezingrainn": "rain",
+          "hazy": "fog",
+          "hazyn": "fog",
+          "hot": "clear-day",
+          "N/A ": "unknown",
+          "mcloudy": "mostly-cloudy-day",
+          "mcloudyn": "mostly-cloudy-night",
+          "mcloudyr": "rain",
+          "mcloudyrn": "rain",
+          "mcloudyrw": "rain",
+          "mcloudyrwn": "rain",
+          "mcloudys": "snow",
+          "mcloudysn": "snow",
+          "mcloudysf": "snow",
+          "mcloudysfn": "snow",
+          "mcloudysfw": "snow",
+          "mcloudysfwn": "snow",
+          "mcloudysw": "mostly-cloudy-day",
+          "mcloudyswn": "mostly-cloudy-night",
+          "mcloudyt": "thunderstorm",
+          "mcloudytn": "thunderstorm",
+          "mcloudytw": "thunderstorm",
+          "mcloudytwn": "thunderstorm",
+          "mcloudyw": "mostly-cloudy-day",
+          "mcloudywn": "mostly-cloudy-night",
+          "na": "unknown",
+          "pcloudy": "partly-cloudy-day",
+          "pcloudyn": "partly-cloudy-night",
+          "pcloudyr": "rain",
+          "pcloudyrn": "rain",
+          "pcloudyrw": "rain",
+          "pcloudyrwn": "rain",
+          "pcloudys": "snow",
+          "pcloudysn": "snow",
+          "pcloudysf": "snow",
+          "pcloudysfn": "snow",
+          "pcloudysfw": "snow",
+          "pcloudysfwn": "snow",
+          "pcloudysw": "partly-cloudy-day",
+          "pcloudyswn": "partly-cloudy-night",
+          "pcloudyt": "thunderstorm",
+          "pcloudytn": "thunderstorm",
+          "pcloudytw": "thunderstorm",
+          "pcloudytwn": "thunderstorm",
+          "pcloudyw": "partly-cloudy-day",
+          "pcloudywn": "partly-cloudy-night",
+          "rain": "rain",
+          "rainn": "rain",
+          "rainandsnow": "rain",
+          "rainandsnown": "rain",
+          "raintosnow": "rain",
+          "raintosnown": "rain",
+          "rainw": "rain",
+          "showers": "rain",
+          "showersn": "rain",
+          "showersw": "rain",
+          "showerswn": "rain",
+          "sleet": "sleet",
+          "sleetn": "sleet",
+          "sleetsnow": "sleet",
+          "sleetsnown": "sleet",
+          "smoke": "fog",
+          "smoken": "fog",
+          "snow": "snow",
+          "snown": "snow",
+          "snoww": "snow",
+          "snowwn": "snow",
+          "snowshowers": "snow",
+          "snowshowersn": "snow",
+          "snowshowersw": "snow",
+          "snowshowerswn": "snow",
+          "snowtorain": "snow",
+          "snowtorainn": "snow",
+          "sunny": "clear-day",
+          "sunnyn": "clear-night",
+          "sunnyw": "mostly-clear-day",
+          "sunnywn": "mostly-clear-night",
+          "tstorm": "thunderstorm",
+          "tstormn": "thunderstorm",
+          "tstorms": "thunderstorm",
+          "tstormsn": "thunderstorm",
+          "tstormsw": "thunderstorm",
+          "tstormswn": "thunderstorm",
+          "wind": "wind",
+          "wintrymix": "sleet",
+          "wintrymixn": "sleet"
+      }
+      console.log('aerisIcon: ' + iconDict[iconName])
+      return './img/' + iconDict[iconName] + '.png';    
+    },
     tempColorize: function (temp) {
       temp = Number(temp.replace(',', '.'))
       let color;
@@ -81,7 +205,7 @@ export default {
       else if ( temp <= 35 ) color = "rgba(255,69,69,1)";
       else if ( temp <= 43.3 ) color = "rgba(255,104,104,1)";
       else if ( temp >= 43.4 ) color = "rgba(218,113,113,1)";
-      console.log(color)
+      console.log('Temp color: ' + color)
       return 'color:' + color;
     }
   }

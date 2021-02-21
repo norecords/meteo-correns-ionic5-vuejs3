@@ -23,8 +23,10 @@
                   <ion-col size="6">
                     forecast
                   </ion-col>
-                  <ion-col size="6" v-if="$store.state.weewxdata.current" :style="tempColorize($store.state.weewxdata.current.outTemp_formatted)">
+                  <ion-col size="6">
                     <span
+                      v-if="$store.state.weewxdata.current" 
+                      :style="tempColorize($store.state.weewxdata.current.outTemp_formatted)"
                       class="weatherdataTemp"
                     >
                       {{ $store.state.weewxdata.current.outTemp_formatted }}

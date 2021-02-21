@@ -5,7 +5,9 @@
         <ion-buttons slot="start">
           <ion-menu-button color="primary"></ion-menu-button>
         </ion-buttons>
-        <ion-title>{{ $route.params.id }} - {{ $store.state.weewxdata.station_url }}</ion-title>
+        <ion-title>
+           {{ $root.appPages[1].title }} 
+        </ion-title>
       </ion-toolbar>
     </ion-header>
     

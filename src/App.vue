@@ -70,19 +70,19 @@ export default defineComponent({
     const appPages = [
       {
         title: 'Live',
-        url: '/Live',
+        url: '/live',
         iosIcon: pulseOutline,
         mdIcon: pulseSharp
       },
       {
         title: 'Graphiques',
-        url: '/Charts',
+        url: '/charts',
         iosIcon: barChartOutline,
         mdIcon: barChartSharp
       },
       {
         title: 'Records',
-        url: '/Records',
+        url: '/records',
         iosIcon: receiptOutline,
         mdIcon: receiptSharp
       },

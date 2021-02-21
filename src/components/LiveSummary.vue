@@ -8,62 +8,63 @@
         <ion-title>{{ $route.params.id }} - {{ $store.state.weewxdata.station_url }}</ion-title>
       </ion-toolbar>
     </ion-header>
-    
     <ion-content :fullscreen="true">
-      <ion-header collapse="condense">
-        <ion-toolbar>
-          <ion-title size="large">{{ $route.params.id }}</ion-title>
-        </ion-toolbar>
-      </ion-header>
-    
-      <div id="container">
-        <strong class="capitalize">{{ $route.params.id }}</strong>
-        <p>Explore <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
-      </div>
+      <ion-row>
+        <ion-col size="6">
+          <ion-card>
+            <ion-card-content>
+              <ion-row>
+                <ion-col size="6">
+                  forecast
+                </ion-col>
+                <ion-col size="6">
+                  <span
+                    v-if="$store.state.weewxdata.current"
+                    class="weatherdataTemp"
+                  >
+                    {{ $store.state.weewxdata.current.outTemp_formatted }}
+                    <sup class="outtempunitlabelsuper">°C</sup>
+                  </span>
+                </ion-col>
+              </ion-row>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+      </ion-row>
     </ion-content>
   </ion-page>
 </template>
 
 <script>
-import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar } from '@ionic/vue';
+import { IonCard, IonCardContent, IonCol, IonContent, IonPage, IonRow, IonHeader, IonToolbar, IonButtons, IonMenuButton, IonTitle } from '@ionic/vue';
 
 export default {
     name: 'LiveSummary',
     components: {
-    IonButtons,
-    IonContent,
-    IonHeader,
-    IonMenuButton,
-    IonPage,
-    IonTitle,
-    IonToolbar
-  }
+      IonCard,
+      IonCardContent,
+      IonCol,
+      IonContent,
+      IonPage,
+      IonButtons,
+      IonRow,
+      IonHeader, 
+      IonToolbar,
+      IonMenuButton, 
+      IonTitle
+    },
 }
 </script>
 
 <style scoped>
-#container {
-  text-align: center;
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
+.weatherdataTemp {
+    width: 100%;
+    display: inline-block;
+    text-align: center;
+    font-size: 45px;
 }
-
-#container strong {
-  font-size: 20px;
-  line-height: 26px;
-}
-
-#container p {
-  font-size: 16px;
-  line-height: 22px;
-  color: #8c8c8c;
-  margin: 0;
-}
-
-#container a {
-  text-decoration: none;
+.outtempunitlabelsuper {
+    top: -1em;
+    font-size: 50%;
 }
 </style>

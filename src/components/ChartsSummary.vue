@@ -1,18 +1,22 @@
 <template>
   <ion-page>
-    <LiveSummary />
+    Charts
   </ion-page>
 </template>
 
 <script>
-import LiveSummary from '@/components/LiveSummary'
+
 import { IonPage } from '@ionic/vue'
 
 export default {
-  name: 'Live',
+  name: 'ChartsSummary',
   components: {
-    LiveSummary,
     IonPage
+  },
+  data (){
+    return {
+      chartOptions: {}
+    }
   }
 }
 </script>

@@ -5,7 +5,7 @@
         <ion-content>
           <ion-list id="inbox-list">
             <ion-list-header>Menu</ion-list-header>
-            <ion-note v-html="store.state.weewxdata.station_url"></ion-note>
+            <ion-note v-html="store.state.weewxdata.site"></ion-note>
   
             <ion-menu-toggle auto-hide="false" v-for="(p, i) in appPages" :key="i">
               <ion-item @click="selectedIndex = i" router-direction="root" :router-link="p.url" lines="none" detail="false" class="hydrated" :class="{ selected: selectedIndex === i }">
@@ -34,10 +34,11 @@
 import { IonApp, IonContent, IonIcon, IonItem, IonLabel, IonList, IonListHeader, IonMenu, IonMenuToggle, IonNote, IonRouterOutlet, IonSplitPane, IonToggle } from '@ionic/vue';
 import { defineComponent, ref } from 'vue';
 import { useRoute } from 'vue-router';
-import axios from 'axios';
 import { useStore } from "vuex";
 import { barChartOutline, barChartSharp , helpBuoyOutline, helpBuoySharp , moonOutline ,pulseOutline, pulseSharp, receiptOutline, receiptSharp } from 'ionicons/icons';
+
 const myBody = document.getElementsByTagName('body')[0];
+
 
 export default defineComponent({
   name: 'App',
@@ -58,7 +59,6 @@ export default defineComponent({
   },
   data () {
     return {
-      results: {},
       theme: {
         name: 'Dark',
         mode: ''
@@ -100,7 +100,6 @@ export default defineComponent({
     
     const route = useRoute();
     const store = useStore();
-
     
     return { 
       selectedIndex,
@@ -117,18 +116,6 @@ export default defineComponent({
       isSelected: (url: string) => url === route.path ? 'selected' : '',
       store
     }
-  },
-  beforeMount () {
-    axios.get('https://meteo.correns.org/api/v2/api.php', {
-      params: {
-        q: 'weewx_data'
-      }   
-    })
-    .then((response) => {
-      this.store.commit('weewxData', response.data)
-      // this.results = this.store.state.weewxdata
-      console.log(this.store.state.weewxdata);
-    })
   },
   methods: {
     toggleTheme () {
@@ -148,7 +135,11 @@ export default defineComponent({
 </script>
 
 <style scoped>
-ion-menu ion-content {
+ion-menu ion-item {
+  --background: transparent;
+}
+
+ion-content {
   --background: var(--ion-item-background, var(--ion-background-color, #fff));
 }
 

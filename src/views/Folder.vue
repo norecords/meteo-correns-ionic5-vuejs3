@@ -39,6 +39,27 @@ export default {
       .then((response) => {
         this.$store.commit('weewxData', response.data)
         console.log('Api is loaded and commited into Vuex')
+
+        const hour = new Date().getHours()
+        const sunrise =  Number(this.$store.state.weewxdata.almanac.sunrise_hour)
+        const sunset = Number(this.$store.state.weewxdata.almanac.sunset_hour)
+        const theme = this.$store.state.weewxdata.extras.belchertown_theme
+
+        if (theme === 'auto') {
+          console.log('actual hour: ' + hour)
+          console.log('sunrise: ' + sunrise + ' - sunset: '+ sunset)
+          if (hour >= sunset && this.$root.theme.mode === '') {
+            this.$root.toggleTheme()
+            console.log('belchertown_theme: ' + theme)
+          } else if (hour <= sunrise && this.$root.theme.mode === 'darkMode') {
+            this.$root.toggleTheme()
+            console.log('belchertown_theme: ' + theme)
+          }
+        } else if (theme === 'dark' && this.$root.theme.mode === '') {
+          console.log('mode: dark')
+          this.$root.toggleTheme()
+          console.log('belchertown_theme: ' + theme)
+        }
       })
     },
     getForecast () {

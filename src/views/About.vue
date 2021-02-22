@@ -44,19 +44,19 @@ import { IonCard, IonCardContent, IonCol, IonContent, IonGrid, IonPage, IonRow, 
 
 export default {
   name: 'About',
-    components: {
-      IonCard,
-      IonCardContent,
-      IonCol,
-      IonContent,
-      IonGrid,
-      IonPage,
-      IonButtons,
-      IonRow,
-      IonHeader, 
-      IonToolbar,
-      IonMenuButton, 
-      IonTitle
-    }
+  components: {
+    IonCard,
+    IonCardContent,
+    IonCol,
+    IonContent,
+    IonGrid,
+    IonPage,
+    IonButtons,
+    IonRow,
+    IonHeader, 
+    IonToolbar,
+    IonMenuButton, 
+    IonTitle
+  }
 }
 </script>

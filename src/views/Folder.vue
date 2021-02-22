@@ -21,16 +21,15 @@ export default {
     Charts,
     Live,
     Records
-    
   },
   ionViewWillEnter () {
-    console.log("Query for api")
     this.getData()
     this.getForecast()
     setInterval(() => { console.log('Reloading api...'); this.getData(); }, 300000); // 5 mins
   },
   methods: {
     getData () {
+      console.log("Query weewx data")
       axios.get('https://meteo.correns.org/api/v2/api.php', {
         params: {
           q: 'weewx_data'
@@ -38,7 +37,7 @@ export default {
       })
       .then((response) => {
         this.$store.commit('weewxData', response.data)
-        console.log('Api is loaded and commited into Vuex')
+        console.log('weewx data loaded and commited into Vuex')
 
         const hour = new Date().getHours()
         const sunrise =  Number(this.$store.state.weewxdata.almanac.sunrise_hour)
@@ -47,7 +46,7 @@ export default {
 
         if (theme === 'auto') {
           console.log('actual hour: ' + hour)
-          console.log('sunrise: ' + sunrise + ' - sunset: '+ sunset)
+          console.log('sunrise: ' + sunrise + ' - sunset: ' + sunset)
           if (hour >= sunset && this.$root.theme.mode === '') {
             this.$root.toggleTheme()
             console.log('belchertown_theme: ' + theme)
@@ -63,6 +62,7 @@ export default {
       })
     },
     getForecast () {
+      console.log("Query forecast data")
       axios.get('https://meteo.correns.org/api/v2/api.php', {
         params: {
           q: 'forecast'
@@ -70,7 +70,7 @@ export default {
       })
       .then((response) => {
         this.$store.commit('forecastData', response.data)
-        console.log('Forecast is loaded and commited into Vuex')
+        console.log('Forecast loaded and commited into Vuex')
       })
     }
   }

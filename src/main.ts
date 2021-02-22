@@ -5,7 +5,6 @@ import router from './router';
 import { IonicVue } from '@ionic/vue';
 import { store } from './store';
 // import Highcharts from 'highcharts';
-// import VueHighcharts from 'vue3-highcharts';
 // import loadStock from 'highcharts/modules/stock.js';
 // import HighchartsChartTem from 'highcharts/themes/dark-unica'
 

@@ -20,7 +20,7 @@
               <ion-label>
                 Toggle {{ theme.name }} Theme
               </ion-label>
-              <ion-toggle @ionChange="toggleTheme"  slot="end"></ion-toggle>
+              <ion-toggle @ionChange="toggleTheme()" slot="end"></ion-toggle>
             </ion-item>
           </ion-list>
         </ion-content>
@@ -35,10 +35,10 @@ import { IonApp, IonContent, IonIcon, IonItem, IonLabel, IonList, IonListHeader,
 import { defineComponent, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { useStore } from "vuex";
+import axios from 'axios'
 import { barChartOutline, barChartSharp , helpBuoyOutline, helpBuoySharp , moonOutline ,pulseOutline, pulseSharp, receiptOutline, receiptSharp } from 'ionicons/icons';
 
 const myBody = document.getElementsByTagName('body')[0];
-
 
 export default defineComponent({
   name: 'App',
@@ -117,10 +117,15 @@ export default defineComponent({
       store
     }
   },
+  beforeMount () {
+    this.getData()
+    this.getForecast()
+    setInterval(() => { console.log('Reloading api...'); this.getData(); }, 300000); // 5 mins
+  },
   methods: {
     toggleTheme () {
-      // console.log('toggled')
-      this.theme.mode = this.theme.mode == 'darkMode' ? '' : 'darkMode'; //toggles theme value
+      console.log('toggleTheme function')
+      this.theme.mode = this.theme.mode === 'darkMode' ? '' : 'darkMode'; //toggles theme value
       if (this.theme.mode === 'darkMode') {
         myBody.classList.add('dark')
         this.theme.name = 'Light'
@@ -128,7 +133,59 @@ export default defineComponent({
         myBody.classList.replace('dark', ':root')
         this.theme.name = 'Dark'
       }
-      // console.log(this.theme)
+    },
+    getData () {
+      console.log("Query weewx data")
+      axios.get('https://meteo.correns.org/api/v2/api.php', {
+        params: {
+          q: 'weewx_data'
+        }   
+      })
+      .then((response) => {
+        this.store.commit('weewxData', response.data)
+        console.log('weewx data loaded and commited into Vuex')
+
+        const hour = new Date().getHours()
+        //const hour = 5
+        const sunrise =  Number(this.store.state.weewxdata.almanac.sunrise_hour)
+        const sunset = Number(this.store.state.weewxdata.almanac.sunset_hour)
+        const belchertownTheme = this.store.state.weewxdata.extras.belchertown_theme
+
+        if (belchertownTheme === 'auto') {
+          console.log('actual hour: ' + hour)
+          console.log('sunrise: ' + sunrise + ' - sunset: ' + sunset)
+          // between sunset and sunrise, this is Night Time
+          if (hour >= sunset && this.theme.mode === '' || hour < sunrise && this.theme.name === 'Dark') {
+            myBody.classList.add('dark')
+            this.theme.mode = 'darkMode'
+            this.theme.name = 'Light'
+            console.log('belchertown_theme: ' + belchertownTheme + ' mode: ' + this.theme.mode)
+          // betwenn sunrise and sunset, this Day Time
+          } else if (hour >= sunrise || hour < sunset && this.theme.name === 'Light') {
+            myBody.classList.replace('dark', ':root')
+            this.theme.mode = ''
+            this.theme.name = 'Dark'
+            console.log('turn on light')
+            console.log('belchertown_theme: ' + belchertownTheme)
+          }
+        } else if (belchertownTheme === 'dark' && this.theme.mode === '') {
+          console.log('mode: dark')
+          this.toggleTheme()
+          console.log('belchertown_theme: ' + belchertownTheme)
+        }
+      })
+    },
+    getForecast () {
+      console.log("Query forecast data")
+      axios.get('https://meteo.correns.org/api/v2/api.php', {
+        params: {
+          q: 'forecast'
+        }   
+      })
+      .then((response) => {
+        this.store.commit('forecastData', response.data)
+        console.log('Forecast loaded and commited into Vuex')
+      })
     }
   }
 });

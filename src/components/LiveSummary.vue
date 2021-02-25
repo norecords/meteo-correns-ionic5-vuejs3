@@ -16,7 +16,7 @@
     <ion-content :fullscreen="true">
       <ion-grid>
         <ion-row>
-          <ion-col size-sm="12" size-md="6" size-lg="6">
+          <ion-col size-xs="12" size-sm="6" size-md="6" size-lg="6" size-xl="4">
             <ion-card>
               <ion-card-content>
                 <ion-row>
@@ -39,6 +39,98 @@
               </ion-card-content>
             </ion-card>
           </ion-col>
+          <ion-col size-xs="12" size-sm="6" size-md="6" size-lg="6" size-xl="4">
+            <ion-card>
+              <ion-card-content>
+                  <p>
+                    Direction: 
+                    <span
+                      v-if="$store.state.weewxdata.current"
+                      v-html="$store.state.weewxdata.current.winddir"
+                    >
+                    </span>
+                  </p>
+                  <p>
+                    Vitesse: 
+                    <span
+                      v-if="$store.state.weewxdata.current"
+                      v-html="$store.state.weewxdata.current.windspeed"
+                    >
+                    </span>
+                  </p>                    
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+          <ion-col size-xs="12" size-sm="6" size-md="6" size-lg="6" size-xl="4">
+            <ion-card>
+              <ion-card-content>
+                  <p>
+                    Baromètre  
+                    <span
+                      v-if="$store.state.weewxdata.station_observations"
+                      v-html="$store.state.weewxdata.station_observations.current.barometer"
+                    >
+                    </span>
+                  </p>
+                  <p>
+                    Visibilité  
+                    <span
+                      v-if="$store.state.weewxdata.station_observations"
+                      v-html="$store.state.weewxdata.station_observations.current.visibility"
+                    >
+                    </span>
+                  </p>
+                  <p>
+                    Base nuage  
+                    <span
+                      v-if="$store.state.weewxdata.station_observations"
+                      v-html="$store.state.weewxdata.station_observations.current.cloudbase"
+                    >
+                    </span>
+                  </p>
+                  <p>
+                    Qualité de l'air
+                    <span
+                      v-if="$store.state.weewxdata.station_observations"
+                      v-html="$store.state.weewxdata.station_observations.current.aqi"
+                    >
+                    </span>
+                  </p>
+                  <p>
+                    Point de rosée
+                    <span
+                      v-if="$store.state.weewxdata.station_observations"
+                      v-html="$store.state.weewxdata.station_observations.current.dewpoint"
+                    >
+                    </span>
+                  </p>
+                  <p>
+                    Humidité
+                    <span
+                      v-if="$store.state.weewxdata.station_observations"
+                      v-html="$store.state.weewxdata.station_observations.current.outHumidity"
+                    >
+                    </span>
+                  </p>
+                  <p>
+                    Pluie
+                    <span
+                      v-if="$store.state.weewxdata.station_observations"
+                      v-html="$store.state.weewxdata.station_observations.current.rainWithRainRate"
+                    >
+                    </span>
+                  </p>
+                  <p>
+                    UV
+                    <span
+                      v-if="$store.state.weewxdata.station_observations"
+                      v-html="$store.state.weewxdata.station_observations.current.UV"
+                    >
+                    </span>
+                  </p>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>      
         </ion-row>
       </ion-grid>  
     </ion-content>
@@ -214,13 +306,13 @@ export default {
 
 <style scoped>
 .weatherdataTemp {
-    width: 100%;
-    display: inline-block;
+    /* min-width: 55px; 
+    display: inline-block;*/
     text-align: center;
     font-size: 45px;
 }
 .outtempunitlabelsuper {
     top: -1em;
-    font-size: 50%;
+    font-size: 45%;
 }
 </style>

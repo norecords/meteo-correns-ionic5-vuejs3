@@ -35,8 +35,6 @@ import { IonApp, IonContent, IonIcon, IonItem, IonLabel, IonList, IonListHeader,
 import { defineComponent, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { useStore } from "vuex";
-import { connect } from 'mqtt';
-import axios from 'axios'
 import { barChartOutline, barChartSharp , helpBuoyOutline, helpBuoySharp , moonOutline ,pulseOutline, pulseSharp, receiptOutline, receiptSharp } from 'ionicons/icons';
 
 const myBody = document.getElementsByTagName('body')[0];
@@ -63,31 +61,7 @@ export default defineComponent({
       theme: {
         name: 'Dark',
         mode: ''
-      },
-      connection: {
-        host: 'iot.correns.org',
-        port: 9001,
-        endpoint: '/mqtt',
-        clean: true, // Reserved session
-        connectTimeout: 4000, // Time out
-        reconnectPeriod: 4000, // Reconnection interval
-        // Certification Information
-        clientId: 'mqttjs_3be2c321',
-      },
-      subscription: {
-        topic: 'weather/correns/live/loop',
-        qos: 0,
-      },
-      receiveNews: {},
-      qosList: [
-        { label: 0, value: 0 },
-        { label: 1, value: 1 },
-        { label: 2, value: 2 },
-      ],
-      client: {
-        connected: false,
-      },
-      subscribeSuccess: false,
+      }
     }
   },
   setup() {
@@ -142,12 +116,6 @@ export default defineComponent({
       store
     }
   },
-  beforeMount () {
-    this.getData()
-    this.getForecast()
-    setInterval(() => { console.log('Reloading api...'); this.getData(); }, 300000); // 5 mins
-    this.createConnection()
-  },
   methods: {
     toggleTheme () {
       console.log('toggleTheme function')
@@ -159,102 +127,6 @@ export default defineComponent({
         myBody.classList.replace('dark', ':root')
         this.theme.name = 'Dark'
       }
-    },
-    getData () {
-      console.log("Query weewx data")
-      axios.get('https://meteo.correns.org/api/v2/api.php', {
-        params: {
-          q: 'weewx_data'
-        }   
-      })
-      .then((response) => {
-        this.store.commit('weewxData', response.data)
-        console.log('weewx data loaded and commited into Vuex')
-
-        const hour = new Date().getHours()
-        //const hour = 5
-        const sunrise =  Number(this.store.state.weewxdata.almanac.sunrise_hour)
-        const sunset = Number(this.store.state.weewxdata.almanac.sunset_hour)
-        const belchertownTheme = this.store.state.weewxdata.extras.belchertown_theme
-
-        if (belchertownTheme === 'auto') {
-          console.log('actual hour: ' + hour)
-          console.log('sunrise: ' + sunrise + ' - sunset: ' + sunset)
-          // between sunset and sunrise, this is Night Time
-          if (hour >= sunset && this.theme.mode === '' || hour < sunrise && this.theme.name === 'Dark') {
-            myBody.classList.add('dark')
-            this.theme.mode = 'darkMode'
-            this.theme.name = 'Light'
-            console.log('belchertown_theme: ' + belchertownTheme + ' mode: ' + this.theme.mode)
-          // betwenn sunrise and sunset, this Day Time
-          } else if (hour >= sunrise || hour < sunset && this.theme.name === 'Light') {
-            myBody.classList.replace('dark', ':root')
-            this.theme.mode = ''
-            this.theme.name = 'Dark'
-            console.log('turn on light')
-            console.log('belchertown_theme: ' + belchertownTheme)
-          }
-        } else if (belchertownTheme === 'dark' && this.theme.mode === '') {
-            myBody.classList.add('dark')
-            this.theme.mode = 'darkMode'
-            this.theme.name = 'Light'
-            console.log('belchertown_theme: ' + belchertownTheme + ' mode: ' + this.theme.mode)
-        }
-      })  
-      .catch((error) => {
-        console.log('error: ' + error)
-      })
-    },
-    getForecast () {
-      console.log("Query forecast data")
-      axios.get('https://meteo.correns.org/api/v2/api.php', {
-        params: {
-          q: 'forecast'
-        }   
-      })
-      .then((response) => {
-        this.store.commit('forecastData', response.data)
-        console.log('Forecast loaded and commited into Vuex')
-      })
-    },
-    createConnection() {
-      // Connect string, and specify the connection method used through protocol
-      // ws unencrypted WebSocket connection
-      // wss encrypted WebSocket connection
-      // mqtt unencrypted TCP connection
-      // mqtts encrypted TCP connection
-      // wxs WeChat mini app connection
-      // alis Alipay mini app connection
-      const { host, port, endpoint, ...options } = this.connection
-      const connectUrl = `wss://${host}:${port}${endpoint}`
-      const client = connect(connectUrl, options)
-      const { topic } = this.subscription
-
-      client.on('connect', () => {
-        console.log('Connection succeeded!')
-        client.subscribe(topic, (error, res) => {
-          if (error) {
-            console.log('Subscribe to topics error', error)
-            return
-          }
-          this.subscribeSuccess = true
-          console.log('Subscribe to topics res', res)
-        })
-      })
-      client.on('error', error => {
-        console.log('Connection failed', error)
-      })
-      client.on('message', (topic, message) => {
-        this.receiveNews = JSON.parse(message.toString())
-        if (this.receiveNews['outTemp_C']) {
-          /* eslint-disable @typescript-eslint/camelcase */
-          this.store.state.weewxdata.current.outTemp_formatted = Number.parseFloat(this.receiveNews['outTemp_C']).toFixed(1).replace('.', ',').toString()
-          const d = new Date ((Number.parseFloat(this.receiveNews['dateTime'])* 1000)).toLocaleString("fr-FR")
-          this.store.state.weewxdata.current.datetime = d
-          console.log(d)
-        }
-        //console.log(message.toString())
-      })
     }
   }
 });

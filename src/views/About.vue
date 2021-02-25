@@ -39,7 +39,7 @@
   </ion-page>
 </template>
 
-<script>
+<script lang="ts">
 import { IonCard, IonCardContent, IonCol, IonContent, IonGrid, IonPage, IonRow, IonHeader, IonToolbar, IonButtons, IonMenuButton, IonTitle } from '@ionic/vue';
 
 export default {

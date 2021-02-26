@@ -16,7 +16,7 @@
     <ion-content :fullscreen="true">
       <ion-grid>
         <ion-row>
-          <ion-col size-xs="12" size-sm="6" size-md="6" size-lg="6" size-xl="4">
+          <ion-col size-xs="12" size-sm="6" size-md="6" size-lg="6" size-xl="4" class="ion-text-center">
             <ion-card>
               <ion-card-content>
                 <ion-row>
@@ -32,32 +32,61 @@
                       :style="tempColorize($store.state.weewxdata.current.outTemp_formatted)"
                       class="weatherdataTemp"
                     >
-                      {{ $store.state.weewxdata.current.outTemp_formatted }}<sup class="outtempunitlabelsuper">°C</sup>
+                      {{ $store.state.weewxdata.current.outTemp_formatted }}<sup class="outtempunitlabelsuper">{{ $store.state.weewxdata.unit_label.outTemp }}</sup>
+                    </span>
+                    <br>
+                    Ressenti
+                    <span
+                      v-if="$store.state.weewxdata.current"
+                      v-html="$store.state.weewxdata.current.appTemp"
+                    >
                     </span>
                   </ion-col>
                 </ion-row>
               </ion-card-content>
             </ion-card>
           </ion-col>
-          <ion-col size-xs="12" size-sm="6" size-md="6" size-lg="6" size-xl="4">
+          <ion-col size-xs="12" size-sm="6" size-md="6" size-lg="6" size-xl="4"  class="ion-text-center">
             <ion-card>
               <ion-card-content>
-                  <p>
-                    Direction: 
+                <div class="compass">
+                  <div class="direction">
+                    <span
+                      v-if="$store.state.weewxdata.current"
+                      v-html="windCardinals"
+                      class="curwinddir"
+                    >
+                    </span>
                     <span
                       v-if="$store.state.weewxdata.current"
                       v-html="$store.state.weewxdata.current.winddir"
+                      class="curwinddeg"
                     >
                     </span>
-                  </p>
+                  </div>
+                  <div
+                    v-if="$store.state.weewxdata.current"
+                    :style="arrow"
+                    class="arrow">
+                  </div>
+                </div>
+                <br>
                   <p>
-                    Vitesse: 
+                    Vitesse 
                     <span
                       v-if="$store.state.weewxdata.current"
                       v-html="$store.state.weewxdata.current.windspeed"
                     >
                     </span>
-                  </p>                    
+                  </p>
+                  <p>
+                    Rafale  
+                    <span
+                      v-if="$store.state.weewxdata.current"
+                      v-html="$store.state.weewxdata.current.windGust"
+                    >
+                    </span>
+                  </p>  
               </ion-card-content>
             </ion-card>
           </ion-col>
@@ -299,6 +328,27 @@ export default {
       else if ( temp >= 43.4 ) color = "rgba(218,113,113,1)";
       console.log('Temp color: ' + color)
       return 'color:' + color;
+    },
+    rotateThis(newRotation) {
+      if ( newRotation == "N/A") { return; }
+      let currentRotation;
+      let finalRotation 
+      finalRotation = finalRotation || 0; // if finalRotation undefined or 0, make 0, else finalRotation
+      currentRotation = finalRotation % 360;
+      if ( currentRotation < 0 ) { currentRotation += 360; }
+      if ( currentRotation < 180 && (newRotation > (currentRotation + 180)) ) { finalRotation -= 360; }
+      if ( currentRotation >= 180 && (newRotation <= (currentRotation - 180)) ) { finalRotation += 360; }  finalRotation += (newRotation - currentRotation);
+      return finalRotation;
+    }
+  },
+  computed: {
+    windCardinals () {
+    const directions = ['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSO','SO','OSO','O','ONO','NO','NNO','N']
+    const cardinal = directions[Math.round(this.$store.state.weewxdata.current.winddir_formatted / 22.5)];
+    return cardinal;
+    },
+    arrow () {
+      return { transform: 'rotate(' + this.rotateThis(this.$store.state.weewxdata.current.winddir_formatted) + 'deg)' }
     }
   }
 }
@@ -314,5 +364,77 @@ export default {
 .outtempunitlabelsuper {
     top: -1em;
     font-size: 45%;
+}
+
+/* Compass from belchertown style.css */
+.compass {
+  display: block;
+  width: 100px;
+  height: 100px;
+  border-radius: 100%;
+  position: relative;
+  color: #555;
+  border: solid #808080 5px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+.compass:before {
+  font-weight: bold;
+  position: absolute;
+  text-align: center;
+  width: 100%;
+  font-size: 14px;
+  top: -2px;
+}
+
+.direction {
+  height: 100%;
+  width: 100%;
+  display: block;
+  /* background: #f2f6f5; */
+  /* background: -moz-linear-gradient(top, #f2f6f5 0%, #cbd5d6 100%); */
+  /* background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #f2f6f5), color-stop(100%, #cbd5d6)); */
+  /* background: -webkit-linear-gradient(top, #f2f6f5 0%, #cbd5d6 100%); */
+  /* background: -o-linear-gradient(top, #f2f6f5 0%, #cbd5d6 100%); */
+  border-radius: 100%;
+}
+
+.direction .curwinddir {
+  font-size: 25px;
+  margin-top: 10px;
+  display: block;
+}
+  .direction .curwinddeg {
+  font-size: 21px;
+}
+
+.arrow {
+  width: 100%;
+  height: 100%;
+  display: block;
+  position: absolute;
+  top: 0;
+  transition: all 1s ease-in;
+}
+.arrow:after {
+  content: "";
+  width: 0;
+  height: 0;
+  /* border-left: 5px solid transparent; */
+  /* border-right: 5px solid transparent; */
+  /* border-bottom: 10px solid red; */
+  /* top: -6px; */
+  /* left: 50%; */
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  /* border-bottom: 21px solid red; */
+  border-top: 21px solid red;
+  position: absolute;
+  top: -10px;
+  left: 38px;
+  /* margin-left: -5px; */
+  z-index: 99;
 }
 </style>
